@@ -1,7 +1,5 @@
 # scraper_helpers.py
-
-
-
+from bs4 import BeautifulSoup
 
 REQUIRED_DOMAINS = {'ics.uci.edu/',
                     'cs.uci.edu/',
@@ -15,7 +13,6 @@ def contains_required_domains(url: str) -> bool:
             return True
 
     return False
-
 
 
 def is_errorless(error_num: int) -> bool:
@@ -33,8 +30,33 @@ def record_error(resp):  # Print or write to log
     print(f'Error message: {resp.error}')
 
 
-def parse_url_list(resp):
-    pass
+def parse_html_to_url_list(content: str) -> list[str]:
+    # Code here taken & adapted from BeautifulSoup documentation:
+    # https://beautiful-soup-4.readthedocs.io/en/latest/
+    html_page = BeautifulSoup(content, 'html.parser')
+    url_list = []
+    for attribute_section in html_page.find_all('a'):
+        url_list.append(attribute_section.get('href'))
 
-def remove_fragment(url_list):
-    pass
+    return url_list
+
+
+def remove_fragment_from_list(url_list: list[str]) -> list[str]:
+    for (i, url) in enumerate(url_list):
+        url_list[i] = remove_fragment(url)
+
+
+def remove_fragment(url: str) -> str:
+    found_fragment_index = -1
+    for i in range(len(url) - 1, -1, -1):
+        if url[i] == '/':
+            return url
+        elif url[i] == '#':
+            found_fragment_index = i
+            break
+
+    if found_fragment_index == -1:
+        print(f'Error: URL |{url}| does not contain a single slash? Might be malformed.')
+        return url
+    else:
+        return url[:found_fragment_index]

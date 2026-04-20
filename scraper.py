@@ -26,8 +26,8 @@ def extract_next_links(url, resp):
         else:
             return list()
 
-    url_list = scraper_helpers.parse_url_list(resp)
-    scraper_helpers.remove_fragment(url_list)
+    url_list = scraper_helpers.parse_html_to_url_list(resp.raw_response.content)
+    scraper_helpers.remove_fragment_from_list(url_list)
     return url_list
 
 

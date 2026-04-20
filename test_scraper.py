@@ -25,6 +25,7 @@ class MyTestCase(unittest.TestCase):
             self.assertEqual(result, scraper_helpers.contains_required_domains(url))
             #print(f'Success: {url}')
 
+
     def test_is_valid_filters_correct_urls(self):
         test_url1 = 'https://www.google.com'
         test_url2 = 'https://ics.uci.edu/'
@@ -51,6 +52,7 @@ class MyTestCase(unittest.TestCase):
             self.assertEqual(result, scraper.is_valid(url))
             # print(f'Success: {url}')
 
+
     def test_is_errorless(self):
         test_dict = {
             200: True,
@@ -61,6 +63,7 @@ class MyTestCase(unittest.TestCase):
 
         for (err_num, result) in test_dict.items():
             self.assertEqual(result, scraper_helpers.is_errorless(err_num))
+
 
     def test_is_fatal_error(self):
         test_dict = {
@@ -79,6 +82,47 @@ class MyTestCase(unittest.TestCase):
         for (err_num, result) in test_dict.items():
             self.assertEqual(result, scraper_helpers.is_fatal_error(err_num))
 
+
+    def test_remove_fragment_from_list(self):
+        test_dict = {
+            'www.google.com/search': 'www.google.com/search',
+            'https://stackoverflow.com/questions/543309': 'https://stackoverflow.com/questions/543309',
+            'https://wiki.leagueoflegends.com/en-us/Champion#Champion_attributes':
+                'https://wiki.leagueoflegends.com/en-us/Champion',
+            'https://en.wikipedia.org/wiki/Guardian_Tales#Reception': 'https://en.wikipedia.org/wiki/Guardian_Tales'
+        }
+
+        for (url, result) in test_dict.items():
+            self.assertEqual(result, scraper_helpers.remove_fragment(url))
+
+        test_list = list(test_dict.keys())
+        test_list_results = list(test_dict.values())
+
+        scraper_helpers.remove_fragment_from_list(test_list)
+        self.assertEqual(test_list_results, test_list)
+
+    def test_parse_html_to_url_list(self):
+        html = ('<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">'
+                '<meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name = "viewport">'
+                '<title>Fabflix - Movie</title><link rel="stylesheet" href="fabflixstyle.css"></head><body>'
+                '<a href="movielist.html"><img id="fabflix_logo" src="fabflix_logo.png" width="200px" height="100px" '
+                'alt="Fabflix Logo"></a>'
+                '<div class="checkout_button_area"><a href="shoppingcart.html">'
+                '<button id="checkout_button" type="button">Checkout</button></a></div>'
+                '<h2>Movie Information</h2><p id="title"><strong>Title: </strong> </p>'
+                '<p id="year"><strong>Year Released: </strong> </p><p id="director"><strong>Director: </strong> </p>'
+                '<p id="genres"><strong>Genres: </strong> </p><p id="rating"><strong>Rating: </strong> </p>'
+                '<form id="addtocartbutton" action="#" method="POST"><input type="submit" value="Add to Cart"></form>'
+                '<p id="addtocarttext" class="addtocarttext"></p>'
+                '<table id="stars_in_movie_table"><tr><th>Starring: </th></tr></table>'
+                '<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>'
+                '<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>'
+                "<script src='singlemovie.js'></script></body></html>")
+
+        url_list = scraper_helpers.parse_html_to_url_list(html)
+        expected_url_list = ['movielist.html', 'shoppingcart.html']
+
+        self.assertEqual(expected_url_list, url_list)
 
 
 if __name__ == '__main__':
