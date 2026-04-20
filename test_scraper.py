@@ -51,6 +51,35 @@ class MyTestCase(unittest.TestCase):
             self.assertEqual(result, scraper.is_valid(url))
             # print(f'Success: {url}')
 
+    def test_is_errorless(self):
+        test_dict = {
+            200: True,
+            601: False,
+            602: False,
+            603: False
+        }
+
+        for (err_num, result) in test_dict.items():
+            self.assertEqual(result, scraper_helpers.is_errorless(err_num))
+
+    def test_is_fatal_error(self):
+        test_dict = {
+            200: False,
+            600: True,
+            601: False,
+            602: False,
+            603: True,
+            604: True,
+            605: True,
+            606: True,
+            607: True,
+            608: True
+        }
+
+        for (err_num, result) in test_dict.items():
+            self.assertEqual(result, scraper_helpers.is_fatal_error(err_num))
+
+
 
 if __name__ == '__main__':
     unittest.main()

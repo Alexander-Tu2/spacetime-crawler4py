@@ -1,5 +1,6 @@
 import re
 import scraper_helpers
+import sys
 from urllib.parse import urlparse
 
 
@@ -18,15 +19,16 @@ def extract_next_links(url, resp):
     #         resp.raw_response.url: the url, again
     #         resp.raw_response.content: the content of the page!
     # Return a list with the hyperlinks (as strings) scrapped from resp.raw_response.content
-    if not scraper_helpers.is_errorless(resp):
-        if scraper_helpers.is_fatal_error(resp):
-            return list()
-        else:
+    if not scraper_helpers.is_errorless(resp.status):
+        if scraper_helpers.is_fatal_error(resp.status):
             scraper_helpers.record_error(resp)  # Print or write to log
+            sys.exit(-1)
+        else:
+            return list()
 
-    link_list = scraper_helpers.parse_url_list(resp)
-    scraper_helpers.remove_fragment(link_list)
-    return link_list
+    url_list = scraper_helpers.parse_url_list(resp)
+    scraper_helpers.remove_fragment(url_list)
+    return url_list
 
 
 def is_valid(url: str):
