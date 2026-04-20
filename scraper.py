@@ -1,9 +1,12 @@
 import re
+import scraper_helpers
 from urllib.parse import urlparse
 
-def scraper(url: str, resp: utils.response.Response) -> list:
+
+def scraper(url: str, resp: 'Response') -> list:
     links = extract_next_links(url, resp)
     return [link for link in links if is_valid(link)]
+
 
 def extract_next_links(url, resp):
     # Implementation required.
@@ -15,15 +18,26 @@ def extract_next_links(url, resp):
     #         resp.raw_response.url: the url, again
     #         resp.raw_response.content: the content of the page!
     # Return a list with the hyperlinks (as strings) scrapped from resp.raw_response.content
-    return list()
+    if not scraper_helpers.is_errorless(resp):
+        if scraper_helpers.is_fatal_error(resp):
+            return list()
+        else:
+            scraper_helpers.record_error(resp)  # Print or write to log
 
-def is_valid(url):
+    link_list = scraper_helpers.parse_url_list(resp)
+    scraper_helpers.remove_fragment(link_list)
+    return link_list
+
+
+def is_valid(url: str):
     # Decide whether to crawl this url or not. 
     # If you decide to crawl it, return True; otherwise return False.
     # There are already some conditions that return False.
     try:
         parsed = urlparse(url)
         if parsed.scheme not in set(["http", "https"]):
+            return False
+        elif not scraper_helpers.contains_required_domains(url):
             return False
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
