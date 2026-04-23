@@ -41,7 +41,7 @@ class MyTestCase(unittest.TestCase):
         field_test_url1 = 'https://www.google.com/calendar?sprop=website:https://ics.uci.edu/event'
         invalid_url = 'http://your_ip:8080/TomcatFormReCaptcha'
         invalid_url2 = 'https://[YOUR_IP]:8443/manager/html'
-        repeat_url = 'https://ics.uci.edu/'
+        #repeat_url = 'https://ics.uci.edu/'
 
         test_dict = {test_url1: False,
                      test_url2: True,
@@ -58,11 +58,11 @@ class MyTestCase(unittest.TestCase):
                      }
 
         for (url, result) in test_dict.items():
-            print(f'Attempt: {url}', end='')
+            #print(f'Attempt: {url}', end='')
             self.assertEqual(result, scraper.is_valid(url))
-            print(f'\rSuccess: {url}')
+            #print(f'\rSuccess: {url}')
 
-        self.assertEqual(False, scraper.is_valid(repeat_url))
+        #self.assertEqual(False, scraper.is_valid(repeat_url))
 
 
     def test_is_errorless(self):

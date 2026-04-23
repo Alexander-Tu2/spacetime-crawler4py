@@ -3,8 +3,8 @@ import scraper_helpers
 import sys
 from urllib.parse import urlparse
 
-url_hash_set = set()
-def scraper(url: str, resp: 'Response') -> list:
+#url_hash_set = set()
+def scraper(url: str, resp) -> list:
     links = extract_next_links(url, resp)
     return [link for link in links if is_valid(link)]
 
@@ -35,12 +35,13 @@ def is_valid(url: str):
     # Decide whether to crawl this url or not. 
     # If you decide to crawl it, return True; otherwise return False.
     # There are already some conditions that return False.
+    parsed = None
     try:
         parsed = urlparse(url)
         if parsed.scheme not in {"http", "https"}:
             return False
-        elif hash(url) in url_hash_set:
-            return False
+        #elif hash(url) in url_hash_set:
+        #    return False
         elif not scraper_helpers.contains_required_domains(url):
             return False
         elif re.match(
@@ -54,7 +55,7 @@ def is_valid(url: str):
             + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower()):
             return False
         else:
-            url_hash_set.add(hash(url))
+            #url_hash_set.add(hash(url))
             return True
 
     except TypeError:

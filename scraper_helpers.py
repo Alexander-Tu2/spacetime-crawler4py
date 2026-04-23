@@ -51,7 +51,7 @@ def record_error(resp: utils.response.Response):  # Print or write to log
                    608: 'Denied by domain robot rules'}
     error_str = f'Program stopped due to fatal error code; found error code {resp.status}'
     if resp.status in status_dict:
-        error_str += f'{status_dict[resp.status]}'
+        error_str += f' - {status_dict[resp.status]}'
 
     print(error_str)
     print(f'Found at scanned URL: {resp.url}')
