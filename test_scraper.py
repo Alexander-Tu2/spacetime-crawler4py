@@ -39,6 +39,8 @@ class MyTestCase(unittest.TestCase):
         wrong_scheme_url = 'httptroll://cs.ics.uci.edu/explore/'
 
         field_test_url1 = 'https://www.google.com/calendar?sprop=website:https://ics.uci.edu/event'
+        invalid_url = 'http://your_ip:8080/TomcatFormReCaptcha'
+        invalid_url2 = 'https://[YOUR_IP]:8443/manager/html'
 
         test_dict = {test_url1: False,
                      test_url2: True,
@@ -49,7 +51,10 @@ class MyTestCase(unittest.TestCase):
                      test_url7: False,
                      correct_but_bad_extension_url: False,
                      wrong_scheme_url: False,
-                     field_test_url1: False}
+                     field_test_url1: False,
+                     invalid_url: False,
+                     invalid_url2: False,
+                     }
 
         for (url, result) in test_dict.items():
             #print(f'Attempt: {url}', end='')

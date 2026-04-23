@@ -3,7 +3,7 @@ import scraper_helpers
 import sys
 from urllib.parse import urlparse
 
-
+url_hash_set = set()
 def scraper(url: str, resp: 'Response') -> list:
     links = extract_next_links(url, resp)
     return [link for link in links if is_valid(link)]
@@ -35,13 +35,16 @@ def is_valid(url: str):
     # Decide whether to crawl this url or not. 
     # If you decide to crawl it, return True; otherwise return False.
     # There are already some conditions that return False.
+    parsed = ''
     try:
         parsed = urlparse(url)
-        if parsed.scheme not in set(["http", "https"]):
+        if parsed.scheme not in {"http", "https"}:
+            return False
+        elif hash(parsed) in url_hash_set:
             return False
         elif not scraper_helpers.contains_required_domains(url):
             return False
-        return not re.match(
+        elif re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
             + r"|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf"
@@ -49,8 +52,16 @@ def is_valid(url: str):
             + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
             + r"|epub|dll|cnf|tgz|sha1"
             + r"|thmx|mso|arff|rtf|jar|csv"
-            + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower())
+            + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower()):
+            return False
+        else:
+            url_hash_set.add(hash(parsed))
+            return True
 
     except TypeError:
         print ("TypeError for ", parsed)
         raise
+    except ValueError:
+        # May be raised from invalid URLs that are unable to be parsed
+        # Example: https://[YOUR_IP]:8443/manager/html
+        return False

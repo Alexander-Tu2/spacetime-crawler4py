@@ -22,7 +22,7 @@ def is_errorless(error_num: int) -> bool:
     return error_num == 200
 
 
-def is_fatal_error(error_num: int) -> bool:  # Refers to errors stemming from code; must correct
+def is_fatal_error(error_num: int) -> bool:  # Fatal refers to errors stemming from code
     #non_fatal_errors = 200, 404, 500, 601, 602, 608
     fatal_errors = 429, 600, 603, 604, 605, 606, 607
     return error_num in fatal_errors
@@ -74,6 +74,8 @@ def parse_html_to_url_list(content: str) -> list[str]:
 def remove_fragment_from_list(url_list: list[str]) -> list[str]:
     for (i, url) in enumerate(url_list):
         url_list[i] = remove_fragment(url)
+
+    return url_list
 
 
 def remove_fragment(url: str) -> str:
