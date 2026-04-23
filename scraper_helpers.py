@@ -38,7 +38,9 @@ def parse_html_to_url_list(content: str) -> list[str]:
     html_page = BeautifulSoup(content, 'html.parser')
     url_list = []
     for attribute_section in html_page.find_all('a'):
-        url_list.append(attribute_section.get('href'))
+        href = attribute_section.get('href')
+        if href:
+            url_list.append(href)
 
     return url_list
 
