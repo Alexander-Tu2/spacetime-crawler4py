@@ -21,7 +21,7 @@ def is_errorless(error_num: int) -> bool:
 
 
 def is_fatal_error(error_num: int) -> bool:  # Refers to errors stemming from code; must correct
-    non_fatal_error = (error_num == 601 or error_num == 602 or error_num == 200)
+    non_fatal_error = (error_num == 601 or error_num == 602 or error_num == 608 or error_num == 200)
     return not non_fatal_error
 
 
