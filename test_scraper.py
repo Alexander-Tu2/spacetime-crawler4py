@@ -52,9 +52,9 @@ class MyTestCase(unittest.TestCase):
                      field_test_url1: False}
 
         for (url, result) in test_dict.items():
-            print(f'Attempt: {url}', end='')
+            #print(f'Attempt: {url}', end='')
             self.assertEqual(result, scraper.is_valid(url))
-            print(f'\rSuccess: {url}')
+            #print(f'\rSuccess: {url}')
 
 
     def test_is_errorless(self):
@@ -71,6 +71,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_is_fatal_error(self):
         test_dict = {
+            1: False,
             200: False,
             404: False,
             500: False,
