@@ -25,8 +25,27 @@ def is_fatal_error(error_num: int) -> bool:  # Refers to errors stemming from co
     return not non_fatal_error
 
 
+# These are all the cache server error codes:
+#     600: Request Malformed
+#     601: Download Exception {error}
+#     602: Spacetime Server Failure
+#     603: Scheme has to be either http or https
+#     604: Domain must be within spec
+#     605: Not an appropriate file extension
+#     606: Exception in parsing url
+#     607: Content too big. {resp.headers['content-length']}
+#     608: Denied by domain robot rules
 def record_error(resp: utils.response.Response):  # Print or write to log
-    print(f'Program stopped due to fatal error code; found error code {resp.status}')
+    status_dict = {600: 'Request Malformed',
+                   601: 'Download Exception',
+                   602: 'Spacetime Server Failure',
+                   603: 'Scheme has to be either http or https',
+                   604: 'Domain must be within spec',
+                   605: 'Not an appropriate file extension',
+                   606: 'Exception in parsing url',
+                   607: 'Content too big',
+                   608: 'Denied by domain robot rules'}
+    print(f'Program stopped due to fatal error code; found error code {resp.status} - {status_dict[resp.status]}')
     print(f'Found at scanned URL: {resp.url}')
     print(f'Error message: {resp.error}')
 
