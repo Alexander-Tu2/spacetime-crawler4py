@@ -27,9 +27,8 @@ def is_fatal_error(error_num: int) -> bool:  # Refers to errors stemming from co
 
 def record_error(resp: utils.response.Response):  # Print or write to log
     print(f'Program stopped due to fatal error code; found error code {resp.status}')
-    print(f'Found at scanned URL: {resp.url} and actual URL: {resp.raw_response.url}')
+    print(f'Found at scanned URL: {resp.url}')
     print(f'Error message: {resp.error}')
-    print(f'Content: {resp.raw_response.content}')
 
 
 def parse_html_to_url_list(content: str) -> list[str]:
@@ -60,7 +59,7 @@ def remove_fragment(url: str) -> str:
             break
 
     if found_fragment_index == -1:
-        print(f'Error: URL |{url}| does not contain a single slash? Might be malformed.')
+        #print(f'Error: URL |{url}| does not contain a single slash? Might be malformed.')
         return url
     else:
         return url[:found_fragment_index]
