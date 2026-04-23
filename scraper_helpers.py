@@ -24,7 +24,7 @@ def is_errorless(error_num: int) -> bool:
 
 def is_fatal_error(error_num: int) -> bool:  # Refers to errors stemming from code; must correct
     #non_fatal_errors = 200, 404, 500, 601, 602, 608
-    fatal_errors = 600, 603, 604, 605, 606, 607
+    fatal_errors = 429, 600, 603, 604, 605, 606, 607
     return error_num in fatal_errors
 
 
@@ -39,7 +39,8 @@ def is_fatal_error(error_num: int) -> bool:  # Refers to errors stemming from co
 #     607: Content too big. {resp.headers['content-length']}
 #     608: Denied by domain robot rules
 def record_error(resp: utils.response.Response):  # Print or write to log
-    status_dict = {600: 'Request Malformed',
+    status_dict = {429: 'Too many requests',
+                   600: 'Request Malformed',
                    601: 'Download Exception',
                    602: 'Spacetime Server Failure',
                    603: 'Scheme has to be either http or https',

@@ -74,6 +74,7 @@ class MyTestCase(unittest.TestCase):
             1: False,
             200: False,
             404: False,
+            429: True,
             500: False,
             600: True,
             601: False,
