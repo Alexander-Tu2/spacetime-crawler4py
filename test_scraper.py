@@ -72,6 +72,7 @@ class MyTestCase(unittest.TestCase):
     def test_is_fatal_error(self):
         test_dict = {
             200: False,
+            404: False,
             600: True,
             601: False,
             602: False,

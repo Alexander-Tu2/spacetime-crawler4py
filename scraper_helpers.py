@@ -23,8 +23,8 @@ def is_errorless(error_num: int) -> bool:
 
 
 def is_fatal_error(error_num: int) -> bool:  # Refers to errors stemming from code; must correct
-    non_fatal_error = (error_num == 601 or error_num == 602 or error_num == 608 or error_num == 200)
-    return not non_fatal_error
+    non_fatal_errors = 200, 404, 601, 602, 608
+    return error_num not in non_fatal_errors
 
 
 # These are all the cache server error codes:
@@ -47,7 +47,11 @@ def record_error(resp: utils.response.Response):  # Print or write to log
                    606: 'Exception in parsing url',
                    607: 'Content too big',
                    608: 'Denied by domain robot rules'}
-    print(f'Program stopped due to fatal error code; found error code {resp.status} - {status_dict[resp.status]}')
+    error_str = f'Program stopped due to fatal error code; found error code {resp.status}'
+    if resp.status in status_dict:
+        error_str += f'{status_dict[resp.status]}'
+
+    print(error_str)
     print(f'Found at scanned URL: {resp.url}')
     print(f'Error message: {resp.error}')
 
