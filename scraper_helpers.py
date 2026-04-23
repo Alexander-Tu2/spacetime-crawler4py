@@ -1,5 +1,6 @@
 # scraper_helpers.py
 from bs4 import BeautifulSoup
+import utils.response
 
 REQUIRED_DOMAINS = {'ics.uci.edu/',
                     'cs.uci.edu/',
@@ -24,10 +25,11 @@ def is_fatal_error(error_num: int) -> bool:  # Refers to errors stemming from co
     return not non_fatal_error
 
 
-def record_error(resp):  # Print or write to log
+def record_error(resp: utils.response.Response):  # Print or write to log
     print(f'Program stopped due to fatal error code; found error code {resp.status}')
     print(f'Found at scanned URL: {resp.url} and actual URL: {resp.raw_response.url}')
     print(f'Error message: {resp.error}')
+    print(f'Content: {resp.raw_response.content}')
 
 
 def parse_html_to_url_list(content: str) -> list[str]:
