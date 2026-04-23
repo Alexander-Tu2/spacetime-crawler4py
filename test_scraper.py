@@ -73,6 +73,7 @@ class MyTestCase(unittest.TestCase):
         test_dict = {
             200: False,
             404: False,
+            500: False,
             600: True,
             601: False,
             602: False,
