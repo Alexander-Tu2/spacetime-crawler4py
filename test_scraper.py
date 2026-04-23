@@ -38,6 +38,8 @@ class MyTestCase(unittest.TestCase):
         correct_but_bad_extension_url = 'https://cs.ics.uci.edu/robots.mp3'
         wrong_scheme_url = 'httptroll://cs.ics.uci.edu/explore/'
 
+        field_test_url1 = 'https://www.google.com/calendar?sprop=website:https://ics.uci.edu/event'
+
         test_dict = {test_url1: False,
                      test_url2: True,
                      test_url3: True,
@@ -46,11 +48,13 @@ class MyTestCase(unittest.TestCase):
                      test_url6: True,
                      test_url7: False,
                      correct_but_bad_extension_url: False,
-                     wrong_scheme_url: False}
+                     wrong_scheme_url: False,
+                     field_test_url1: False}
 
         for (url, result) in test_dict.items():
+            print(f'Attempt: {url}', end='')
             self.assertEqual(result, scraper.is_valid(url))
-            # print(f'Success: {url}')
+            print(f'\rSuccess: {url}')
 
 
     def test_is_errorless(self):
@@ -76,7 +80,7 @@ class MyTestCase(unittest.TestCase):
             605: True,
             606: True,
             607: True,
-            608: True
+            608: False
         }
 
         for (err_num, result) in test_dict.items():
