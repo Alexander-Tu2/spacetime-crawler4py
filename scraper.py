@@ -1,15 +1,17 @@
 import re
 import scraper_helpers
+import statistics_helpers
 import sys
 from urllib.parse import urlparse
 
 #url_hash_set = set()
 def scraper(url: str, resp) -> list:
+    record_link_information(url, resp)
     links = extract_next_links(url, resp)
     return [link for link in links if is_valid(link)]
 
 
-def extract_next_links(url, resp):
+def extract_next_links(url: str, resp) -> list:
     # Implementation required.
     # url: the URL that was used to get the page
     # resp.url: the actual url of the page
@@ -31,7 +33,7 @@ def extract_next_links(url, resp):
     return url_list
 
 
-def is_valid(url: str):
+def is_valid(url: str) -> bool:
     # Decide whether to crawl this url or not. 
     # If you decide to crawl it, return True; otherwise return False.
     # There are already some conditions that return False.
@@ -65,3 +67,8 @@ def is_valid(url: str):
         # May be raised from invalid URLs that are unable to be parsed
         # Example: https://[YOUR_IP]:8443/manager/html
         return False
+
+def record_link_information(url: str, resp) -> None:
+    parsed_info_iter = statistics_helpers.parse_response(url, resp)
+    statistics_helpers.write_count(resp, parsed_info_iter)
+    statistics_helpers.record_count_to_file()
