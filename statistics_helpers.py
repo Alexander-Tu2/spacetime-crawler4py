@@ -81,10 +81,10 @@ def record_count_to_file() -> None:
     #  -> Longest page (LONGEST_PAGE_WORD_COUNT)
     #  -> Top 50 most common words, sorted by frequency (WORD_COUNT_DICTIONARY)
     #  -> Subdomain count, sorted alphabetically (SUBDOMAIN_COUNT_DICTIONARY)
-    unique_pages_string = string_unique_pages()
-    longest_page_string = string_longest_page()
-    top_common_words_string = string_top_common_words()
-    subdomain_count_string = string_subdomain_count()
+    unique_pages_string = string_unique_pages(UNIQUE_PAGE_COUNT)
+    longest_page_string = string_longest_page(LONGEST_PAGE_WORD_COUNT)
+    top_common_words_string = string_top_common_words(WORD_COUNT_DICTIONARY)
+    subdomain_count_string = string_subdomain_count(SUBDOMAIN_COUNT_DICTIONARY)
 
     write_string = (unique_pages_string + "\n" +
                     longest_page_string + "\n" +
@@ -95,14 +95,90 @@ def record_count_to_file() -> None:
         file.write(write_string)
 
 
-def string_unique_pages() -> str:
-    return ''
+def string_unique_pages(unique_page_count) -> str:
+    return f'Unique page count: {unique_page_count}\n'
 
-def string_longest_page() -> str:
-    return ''
+def string_longest_page(longest_page_word_count) -> str:
+    return f'Longest page length: {longest_page_word_count}\n'
 
-def string_top_common_words() -> str:
-    return ''
+def string_top_common_words(top_common_words_dict) -> str:
+    return f'Top 50 common words: \n{string_frequency_dict(top_common_words_dict, 'freq')}'
 
-def string_subdomain_count() -> str:
-    return ''
+def string_subdomain_count(subdomain_count_dict) -> str:
+    return f'All subdomain counts: \n{string_frequency_dict(subdomain_count_dict, 'alphabet')}'
+
+def string_frequency_dict(frequency_dict: dict[str, int], sort_type: str) -> str:
+    str_result = ''
+    token_list = []
+    frequency_list = []
+    for (token, frequency) in frequency_dict.items():
+        token_list.append(token)
+        frequency_list.append(frequency)
+
+    token_list, frequency_list = pairwiseMergeSort(token_list, frequency_list, sort_type)
+
+    for index in range(min(len(token_list), 50)):
+        str_result += f'{token_list[index]}, {frequency_list[index]}\n'
+
+    return str_result
+
+
+# O(u log u) time, where u is the number of unique tokens, since it
+#  is a simple modification of merge sort, which is known to take
+#  O(n log n) time, where n is the input size, u in this case.
+def pairwiseMergeSort(token_list: list[str], freq_list: list[int], sort_type: str) -> tuple[list[str], list[int]]:
+    """
+    Sorts in decreasing order of frequency,
+    sorting both the token_list and freq_list based
+    on freq_list entries
+    """
+    if len(token_list) < 2:
+        # Base Case
+        return (token_list, freq_list)
+    else:
+        # Recurse
+        halfpoint = len(token_list) // 2
+        left_token, left_freq = pairwiseMergeSort(token_list[:halfpoint], freq_list[:halfpoint], sort_type)
+
+        right_token, right_freq = pairwiseMergeSort(token_list[halfpoint:], freq_list[halfpoint:], sort_type)
+
+        # Merge
+        new_token_list = []
+        new_freq_list = []
+        left_index = 0
+        right_index = 0
+
+        while left_index < len(left_token) and right_index < len(right_token):
+            if sort_type == 'freq':
+                if left_freq[left_index] >= right_freq[right_index]:
+                    new_token_list.append(left_token[left_index])
+                    new_freq_list.append(left_freq[left_index])
+                    left_index += 1
+                else:
+                    new_token_list.append(right_token[right_index])
+                    new_freq_list.append(right_freq[right_index])
+                    right_index += 1
+            else:
+                if left_token[left_index] <= right_token[right_index]:
+                    new_token_list.append(left_token[left_index])
+                    new_freq_list.append(left_freq[left_index])
+                    left_index += 1
+                else:
+                    new_token_list.append(right_token[right_index])
+                    new_freq_list.append(right_freq[right_index])
+                    right_index += 1
+
+        # Fill in the other incomplete half
+        while left_index < len(left_token):
+            new_token_list.append(left_token[left_index])
+            new_freq_list.append(left_freq[left_index])
+            left_index += 1
+
+        while right_index < len(right_token):
+            new_token_list.append(right_token[right_index])
+            new_freq_list.append(right_freq[right_index])
+            right_index += 1
+
+        return new_token_list, new_freq_list
+
+
