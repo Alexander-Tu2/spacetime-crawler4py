@@ -95,14 +95,14 @@ def record_count_to_file() -> None:
         file.write(write_string)
 
 
-def string_unique_pages():
-    pass
+def string_unique_pages() -> str:
+    return ''
 
-def string_longest_page():
-    pass
+def string_longest_page() -> str:
+    return ''
 
-def string_top_common_words():
-    pass
+def string_top_common_words() -> str:
+    return ''
 
-def string_subdomain_count():
-    pass
+def string_subdomain_count() -> str:
+    return ''
