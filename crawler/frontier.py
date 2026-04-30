@@ -44,11 +44,18 @@ class Frontier(object):
         for url, completed in self.save.values():
             if not completed and is_valid(url):
                 subdomain = statistics_helpers.get_subdomain(url)
-                self.to_be_downloaded[subdomain].add(url)
+                self._upsert_tbd_dict(subdomain, url)
                 tbd_count += 1
         self.logger.info(
             f"Found {tbd_count} urls to be downloaded from {total_count} "
             f"total urls discovered.")
+
+
+    def _upsert_tbd_dict(self, subdomain, url) -> None:
+        if subdomain in self.to_be_downloaded:
+            self.to_be_downloaded[subdomain].add(url)
+        else:
+            self.to_be_downloaded[subdomain] = set(url)
 
 
     def get_tbd_url(self, new_reset=False):
@@ -75,7 +82,7 @@ class Frontier(object):
             self.save.sync()
 
             subdomain = statistics_helpers.get_subdomain(url)
-            self.to_be_downloaded[subdomain].add(url)
+            self._upsert_tbd_dict(subdomain, url)
 
 
     def mark_url_complete(self, url):
