@@ -18,6 +18,15 @@ def contains_required_domains(url: str) -> bool:
     return False
 
 
+def contains_potential_trap(url: str) -> str:
+    potential_traps = 'event', 'calendar', 'dataset'
+    for trap in potential_traps:
+        if trap in url:
+            return trap
+
+    return ''
+
+
 def is_errorless(error_num: int) -> bool:
     return error_num == 200
 
