@@ -1,12 +1,51 @@
 # statistics_helpers.py
+
+from bs4 import BeautifulSoup
 import scraper_helpers
 import urllib
 
 
 def parse_response(url: str, resp) -> 'str iterator':
     # Returns word-by-word the desirable information from the page content
-    # Uses definition of token as in assignment 1
-    pass
+    # Uses definition of token as in assignment 1 with adjustments:
+    #   - Apostrophes are stripped instead of being separators for common 's endings
+
+    # Code here taken & adapted from BeautifulSoup documentation:
+    # https://beautiful-soup-4.readthedocs.io/en/latest/
+    processed_content = BeautifulSoup(resp.raw_response.content, 'html.parser')
+    parsed_words = parse_line(processed_content.get_text())
+    yield from format_tokens(parsed_words)
+
+
+def format_tokens(token_iter: 'str iterator') -> 'str iterator':
+    # Remove all 's
+    for token in token_iter:
+        if "'s" in token:
+            yield token[:token.find("'")]
+        else:
+            yield token
+
+
+def parse_line(line: str) -> 'str iterator':
+    # Ex: J@hn D#e
+    word_start = 0
+    word_end = 0
+    english_chars = 'abcdefghijklmnopqrstuvwxyz1234567890\''
+    for letter in line:
+        if letter.lower() in english_chars:
+            # Add into current word
+            word_end += 1
+        else:
+            # Remove word & make token
+            if word_start == word_end:
+                # No blank tokens
+                word_start += 1
+                word_end += 1
+                continue
+
+            yield line[word_start:word_end].lower()
+            word_end += 1
+            word_start = word_end
 
 
 UNIQUE_PAGE_COUNT = 0

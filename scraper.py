@@ -4,7 +4,8 @@ import statistics_helpers
 import sys
 from urllib.parse import urlparse
 
-#url_hash_set = set()
+
+# url_hash_set = set()
 def scraper(url: str, resp) -> list:
     record_link_information(url, resp)
     links = extract_next_links(url, resp)
@@ -47,26 +48,27 @@ def is_valid(url: str) -> bool:
         elif not scraper_helpers.contains_required_domains(url):
             return False
         elif re.match(
-            r".*\.(css|js|bmp|gif|jpe?g|ico"
-            + r"|png|tiff?|mid|mp2|mp3|mp4"
-            + r"|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf"
-            + r"|ps|eps|tex|ppt|pptx|doc|docx|xls|xlsx|names"
-            + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
-            + r"|epub|dll|cnf|tgz|sha1"
-            + r"|thmx|mso|arff|rtf|jar|csv"
-            + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower()):
+                r".*\.(css|js|bmp|gif|jpe?g|ico"
+                + r"|png|tiff?|mid|mp2|mp3|mp4"
+                + r"|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf"
+                + r"|ps|eps|tex|ppt|pptx|doc|docx|xls|xlsx|names"
+                + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
+                + r"|epub|dll|cnf|tgz|sha1"
+                + r"|thmx|mso|arff|rtf|jar|csv"
+                + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower()):
             return False
         else:
             #url_hash_set.add(hash(url))
             return True
 
     except TypeError:
-        print ("TypeError for ", parsed)
+        print("TypeError for ", parsed)
         raise
     except ValueError:
         # May be raised from invalid URLs that are unable to be parsed
         # Example: https://[YOUR_IP]:8443/manager/html
         return False
+
 
 def record_link_information(url: str, resp) -> None:
     parsed_info_iter = statistics_helpers.parse_response(url, resp)
