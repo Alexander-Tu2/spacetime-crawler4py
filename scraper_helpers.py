@@ -19,7 +19,7 @@ def contains_required_domains(url: str) -> bool:
 
 
 def contains_potential_trap(url: str) -> str:
-    potential_traps = 'event', 'calendar', 'dataset'
+    potential_traps = 'event', 'calendar', 'date', 'dataset', 'login'
     for trap in potential_traps:
         if trap in url:
             return trap

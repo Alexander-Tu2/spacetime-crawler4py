@@ -77,11 +77,10 @@ def write_count(url, resp, token_iter: 'str iterable') -> None:
         UNIQUE_PAGE_HASH_SET.add(unique_hash)
         UNIQUE_PAGE_COUNT += 1
     else:
-        # Should not happen during regular operation, assuming
-        #  base code filters out duplicates and is_valid removes
-        #  URL fragments
-        record_warning_to_file(f'ERROR: Found a duplicate URL: {clean_url}, travelled from '
-                               f'{url}')
+        # Could happen during regular operation, since unique pages uses
+        #  more restrictive definition of unique
+        pass
+
 
 
     # WORD_COUNT_DICTIONARY + LONGEST_PAGE_WORD_COUNT
