@@ -139,14 +139,18 @@ def record_count_to_file() -> None:
 def string_unique_pages(unique_page_count) -> str:
     return f'Unique page count: {unique_page_count}\n'
 
+
 def string_longest_page(longest_page_word_count) -> str:
     return f'Longest page length: {longest_page_word_count}\n'
 
+
 def string_top_common_words(top_common_words_dict) -> str:
-    return f'Top 50 common words: \n{string_frequency_dict(top_common_words_dict, 'freq')}'
+    return f'Top 50 common words: \n{string_frequency_dict(top_common_words_dict, "freq")}'
+
 
 def string_subdomain_count(subdomain_count_dict) -> str:
-    return f'All subdomain counts: \n{string_frequency_dict(subdomain_count_dict, 'alphabet')}'
+    return f'All subdomain counts: \n{string_frequency_dict(subdomain_count_dict, "alphabet")}'
+
 
 def string_frequency_dict(frequency_dict: dict[str, int], sort_type: str) -> str:
     str_result = ''
