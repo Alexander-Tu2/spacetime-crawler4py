@@ -4,6 +4,8 @@ import shelve
 from threading import Thread, RLock
 from queue import Queue, Empty
 
+import copy
+
 from utils import get_logger, get_urlhash, normalize
 from scraper import is_valid
 import statistics_helpers
@@ -69,7 +71,8 @@ class Frontier(object):
 
 
     def get_next_url_iterator(self) -> 'str iterator':
-        for subdomain, url_set in self.to_be_downloaded.items():
+        dict_copy = copy.copy(self.to_be_downloaded)
+        for subdomain, url_set in dict_copy.items():
             if len(url_set) > 0:
                 yield url_set.pop()
 
