@@ -76,6 +76,14 @@ def is_valid(url: str) -> bool:
 def record_link_information(url: str, resp) -> None:
     if resp is None or resp.raw_response is None or resp.raw_response.content is None:
         return
+    elif not scraper_helpers.is_errorless(resp.status):
+        if scraper_helpers.is_fatal_error(resp.status):
+            scraper_helpers.record_error(resp)  # Print or write to log
+            sys.exit(-1)
+        else:
+            statistics_helpers.record_warning_to_file(f'ERROR({resp.status}): Occurred on {resp.url},'
+                                                      f' travelled from {url}')
+            return
     parsed_info_iter = statistics_helpers.parse_response(url, resp)
     statistics_helpers.write_count(url, resp, parsed_info_iter)
     statistics_helpers.record_count_to_file()
