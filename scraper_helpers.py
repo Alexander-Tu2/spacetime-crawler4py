@@ -3,10 +3,10 @@ from bs4 import BeautifulSoup
 import utils.response
 import urllib
 
-REQUIRED_DOMAINS = {'ics.uci.edu',
-                    'cs.uci.edu',
-                    'informatics.uci.edu',
-                    'stat.uci.edu'}
+REQUIRED_DOMAINS = {'.ics.uci.edu',
+                    '.cs.uci.edu',
+                    '.informatics.uci.edu',
+                    '.stat.uci.edu'}
 
 
 def contains_required_domains(url: str) -> bool:
@@ -14,6 +14,7 @@ def contains_required_domains(url: str) -> bool:
     for domain in REQUIRED_DOMAINS:
         if domain in url.netloc:
             return True
+
 
     return False
 

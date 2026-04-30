@@ -6,11 +6,11 @@ import scraper_helpers
 class MyTestCase(unittest.TestCase):
     def test_contains_required_domains(self):
         test_url1 = 'https://www.google.com'
-        test_url2 = 'https://ics.uci.edu/'
-        test_url3 = 'https://ics.uci.edu/facts-figures/ics-mission-history/'
-        test_url4 = 'https://cs.ics.uci.edu/explore/'
-        test_url5 = 'https://informatics.ics.uci.edu/graduate-programs-admissions/#researchprograms'
-        test_url6 = 'https://stat.ics.uci.edu/graduate-statistics-programs/#researchprograms'
+        test_url2 = 'https://zrazy.ics.uci.edu/'
+        test_url3 = 'https://thornton.ics.uci.edu/facts-figures/ics-mission-history/'
+        test_url4 = 'https://klefstad.cs.ics.uci.edu/explore/'
+        test_url5 = 'https://super.informatics.ics.uci.edu/graduate-programs-admissions/#researchprograms'
+        test_url6 = 'https://duper.stat.ics.uci.edu/graduate-statistics-programs/#researchprograms'
         test_url7 = 'https://www.remnote.com/notes'
 
         test_dict = {test_url1: False,
@@ -28,11 +28,11 @@ class MyTestCase(unittest.TestCase):
 
     def test_is_valid_filters_correct_urls(self):
         test_url1 = 'https://www.google.com'
-        test_url2 = 'https://ics.uci.edu/'
-        test_url3 = 'https://ics.uci.edu/facts-figures/ics-mission-history/'
-        test_url4 = 'https://cs.ics.uci.edu/explore/'
-        test_url5 = 'https://informatics.ics.uci.edu/graduate-programs-admissions/#researchprograms'
-        test_url6 = 'https://stat.ics.uci.edu/graduate-statistics-programs/#researchprograms'
+        test_url2 = 'https://cesc.ics.uci.edu/'
+        test_url3 = 'https://super.ics.uci.edu/facts-figures/ics-mission-history/'
+        test_url4 = 'https://hello.cs.ics.uci.edu/explore/'
+        test_url5 = 'https://awesome.informatics.ics.uci.edu/graduate-programs-admissions/#researchprograms'
+        test_url6 = 'https://crazy.stat.ics.uci.edu/graduate-statistics-programs/#researchprograms'
         test_url7 = 'https://www.remnote.com/notes'
 
         correct_but_bad_extension_url = 'https://cs.ics.uci.edu/robots.mp3'
