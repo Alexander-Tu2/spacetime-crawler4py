@@ -1,11 +1,20 @@
 # statistics_helpers.py
+from typing import Generator
 
 from bs4 import BeautifulSoup
+import nltk
 import scraper_helpers
 import urllib
 
+# nltk code taken from:
+# https://www.geeksforgeeks.org/nlp/removing-stop-words-nltk-python/
+nltk.download('stopwords')
+nltk.download('punkt')
 
-def parse_response(url: str, resp) -> 'str iterator':
+STOPWORDS = set(nltk.corpus.stopwords.words('english'))
+
+
+def parse_response(url: str, resp) -> Generator[str]:
     # Returns word-by-word the desirable information from the page content
     # Uses definition of token as in assignment 1 with adjustments:
     #   - Apostrophes are stripped instead of being separators for common 's endings
@@ -17,16 +26,19 @@ def parse_response(url: str, resp) -> 'str iterator':
     yield from format_tokens(parsed_words)
 
 
-def format_tokens(token_iter: 'str iterator') -> 'str iterator':
-    # Remove all 's
+def format_tokens(token_iter: Generator[str]) -> Generator[str]:
     for token in token_iter:
+        token = token.lower()
+        if token in STOPWORDS:
+            continue
+        # Remove all 's
         if "'s" in token:
-            yield token[:token.find("'")]
-        else:
-            yield token
+            token = token[:token.find("'")]
+
+        yield token
 
 
-def parse_line(line: str) -> 'str iterator':
+def parse_line(line: str) -> Generator[str]:
     # Ex: J@hn D#e
     word_start = 0
     word_end = 0
@@ -53,7 +65,7 @@ UNIQUE_PAGE_HASH_SET = set()
 LONGEST_PAGE_WORD_COUNT = 0
 WORD_COUNT_DICTIONARY = dict() # For 50 most common words
 SUBDOMAIN_COUNT_DICTIONARY = dict() # For subdomain unique page count
-def write_count(resp, token_iter: 'str iterator') -> None:
+def write_count(resp, token_iter: Generator[str]) -> None:
     # UNIQUE_PAGE_COUNT
     global UNIQUE_PAGE_COUNT
     global UNIQUE_PAGE_HASH_SET
@@ -134,6 +146,11 @@ def record_count_to_file() -> None:
 
     with open('statistics.txt', 'w') as file:
         file.write(write_string)
+
+
+def record_warning_to_file(warning: str) -> None:
+    with open('warning.txt', 'a') as file:
+        file.write(warning)
 
 
 def string_unique_pages(unique_page_count) -> str:

@@ -1,6 +1,7 @@
 import unittest
 import scraper
 import scraper_helpers
+import statistics_helpers
 
 
 class MyTestCase(unittest.TestCase):
@@ -139,6 +140,25 @@ class MyTestCase(unittest.TestCase):
         expected_url_list = ['movielist.html', 'shoppingcart.html']
 
         self.assertEqual(expected_url_list, url_list)
+
+    def test_format_words_filter_out_stopwords(self):
+        all_words = 'hello','I','i','he','is','isn\'t'
+        expected_words = 'hello',
+        token_iterator = statistics_helpers.format_tokens(all_words)
+        token_tuple = tuple(token_iterator)
+
+        self.assertEqual(expected_words, token_tuple)
+
+
+    def test_format_words_filter_out_possessives(self):
+        all_words = 'he\'s', 'alex\'s', 'john\'s', 'church\'s', 'she\'s'
+        expected_words = 'alex', 'john', 'church'
+        token_iterator = statistics_helpers.format_tokens(all_words)
+        token_tuple = tuple(token_iterator)
+
+        self.assertEqual(expected_words, token_tuple)
+
+
 
 
 if __name__ == '__main__':

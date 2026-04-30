@@ -15,7 +15,6 @@ def contains_required_domains(url: str) -> bool:
         if domain in url.netloc:
             return True
 
-
     return False
 
 
