@@ -52,10 +52,10 @@ class Frontier(object):
 
 
     def _upsert_tbd_dict(self, subdomain, url) -> None:
-        if subdomain in self.to_be_downloaded:
-            self.to_be_downloaded[subdomain].add(url)
-        else:
-            self.to_be_downloaded[subdomain] = set(url)
+        if subdomain not in self.to_be_downloaded:
+            self.to_be_downloaded[subdomain] = set()
+
+        self.to_be_downloaded[subdomain].add(url)
 
 
     def get_tbd_url(self, new_reset=False):
