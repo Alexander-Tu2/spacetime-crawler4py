@@ -71,7 +71,7 @@ def is_valid(url: str) -> bool:
 
 
 def record_link_information(url: str, resp) -> None:
-    if resp is None or resp.raw_content is None or resp.raw_content.content is None:
+    if resp is None or resp.raw_response is None or resp.raw_response.content is None:
         return
     parsed_info_iter = statistics_helpers.parse_response(url, resp)
     statistics_helpers.write_count(resp, parsed_info_iter)
