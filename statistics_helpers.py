@@ -13,6 +13,8 @@ nltk.download('punkt')
 
 STOPWORDS = set(nltk.corpus.stopwords.words('english'))
 
+# Word threshold for warning log
+LOWEST_WORD_COUNT_THRESHOLD = 100
 
 def parse_response(url: str, resp) -> Generator[str]:
     # Returns word-by-word the desirable information from the page content
@@ -65,7 +67,7 @@ UNIQUE_PAGE_HASH_SET = set()
 LONGEST_PAGE_WORD_COUNT = 0
 WORD_COUNT_DICTIONARY = dict() # For 50 most common words
 SUBDOMAIN_COUNT_DICTIONARY = dict() # For subdomain unique page count
-def write_count(resp, token_iter: Generator[str]) -> None:
+def write_count(url, resp, token_iter: Generator[str]) -> None:
     # UNIQUE_PAGE_COUNT
     global UNIQUE_PAGE_COUNT
     global UNIQUE_PAGE_HASH_SET
@@ -78,13 +80,18 @@ def write_count(resp, token_iter: Generator[str]) -> None:
         # Should not happen during regular operation, assuming
         #  base code filters out duplicates and is_valid removes
         #  URL fragments
-        print(f'ERROR: Found a duplicate URL: {clean_url}')
+        record_warning_to_file(f'ERROR: Found a duplicate URL: {clean_url}, travelled from '
+                               f'{url}')
 
 
     # WORD_COUNT_DICTIONARY + LONGEST_PAGE_WORD_COUNT
     global LONGEST_PAGE_WORD_COUNT
     global WORD_COUNT_DICTIONARY
     current_count = compute_word_frequencies(token_iter, WORD_COUNT_DICTIONARY)
+    if current_count < LOWEST_WORD_COUNT_THRESHOLD:
+        record_warning_to_file(f'Found URL |{clean_url}| with word count of {current_count}, under'
+                               f' the useful word count of {LOWEST_WORD_COUNT_THRESHOLD}, '
+                               f'travelled from {url}')
     LONGEST_PAGE_WORD_COUNT = max(current_count, LONGEST_PAGE_WORD_COUNT)
 
     # SUBDOMAIN_COUNT_DICTIONARY

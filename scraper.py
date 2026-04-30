@@ -27,6 +27,8 @@ def extract_next_links(url: str, resp) -> list:
             scraper_helpers.record_error(resp)  # Print or write to log
             sys.exit(-1)
         else:
+            statistics_helpers.record_warning_to_file(f'ERROR({resp.status}): Occurred on {resp.url},'
+                                                      f' travelled from {url}')
             return list()
 
     url_list = scraper_helpers.parse_html_to_url_list(resp.raw_response.content)
@@ -75,5 +77,5 @@ def record_link_information(url: str, resp) -> None:
     if resp is None or resp.raw_response is None or resp.raw_response.content is None:
         return
     parsed_info_iter = statistics_helpers.parse_response(url, resp)
-    statistics_helpers.write_count(resp, parsed_info_iter)
+    statistics_helpers.write_count(url, resp, parsed_info_iter)
     statistics_helpers.record_count_to_file()
