@@ -55,7 +55,8 @@ def is_valid(url: str) -> bool:
                 + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
                 + r"|epub|dll|cnf|tgz|sha1"
                 + r"|thmx|mso|arff|rtf|jar|csv"
-                + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower()):
+                + r"|rm|smil|wmv|swf|wma|zip|rar|gz"
+                  r"|sql|cpp|c|hpp|h|py|java)$", parsed.path.lower()):
             return False
         else:
             #url_hash_set.add(hash(url))
