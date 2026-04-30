@@ -101,12 +101,16 @@ def compute_word_frequencies(token_iter: 'str iterator', word_count_dictionary: 
 
 
 def increment_subdomain_dictionary(clean_url: str, subdomain_dict: dict) -> None:
-    url_obj = urllib.parse.urlsplit(clean_url)
-    subdomain = url_obj.hostname
+    subdomain = get_subdomain(clean_url)
     if subdomain in subdomain_dict:
         subdomain_dict[subdomain] += 1
     else:
         subdomain_dict[subdomain] = 1
+
+
+def get_subdomain(url: str) -> str:
+    url_obj = urllib.parse.urlsplit(url)
+    return url_obj.hostname
 
 
 def record_count_to_file() -> None:
