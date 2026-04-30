@@ -88,9 +88,11 @@ def write_count(url, resp, token_iter: 'str iterable') -> None:
     global WORD_COUNT_DICTIONARY
     current_count = compute_word_frequencies(token_iter, WORD_COUNT_DICTIONARY)
     if current_count < LOWEST_WORD_COUNT_THRESHOLD:
-        record_warning_to_file(f'Found URL |{clean_url}| with word count of {current_count}, under'
-                               f' the useful word count of {LOWEST_WORD_COUNT_THRESHOLD}, '
-                               f'travelled from {url}')
+        warning_str = f'LOW WORD COUNT ({current_count} < {LOWEST_WORD_COUNT_THRESHOLD}): '\
+                      f'At {clean_url}'
+        if clean_url != url:
+            warning_str += f', redirected from {url}!'
+        record_warning_to_file(warning_str)
     LONGEST_PAGE_WORD_COUNT = max(current_count, LONGEST_PAGE_WORD_COUNT)
 
     # SUBDOMAIN_COUNT_DICTIONARY

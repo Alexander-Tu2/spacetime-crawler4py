@@ -27,8 +27,6 @@ def extract_next_links(url: str, resp) -> list:
             scraper_helpers.record_error(resp)  # Print or write to log
             sys.exit(-1)
         else:
-            statistics_helpers.record_warning_to_file(f'ERROR({resp.status}): Occurred on {resp.url},'
-                                                      f' travelled from {url}')
             return list()
 
     url_list = scraper_helpers.parse_html_to_url_list(resp.raw_response.content)
