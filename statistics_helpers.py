@@ -1,5 +1,4 @@
 # statistics_helpers.py
-from typing import Generator
 
 from bs4 import BeautifulSoup
 import nltk
@@ -16,7 +15,7 @@ STOPWORDS = set(nltk.corpus.stopwords.words('english'))
 # Word threshold for warning log
 LOWEST_WORD_COUNT_THRESHOLD = 100
 
-def parse_response(url: str, resp) -> Generator[str]:
+def parse_response(url: str, resp) -> 'str iterator':
     # Returns word-by-word the desirable information from the page content
     # Uses definition of token as in assignment 1 with adjustments:
     #   - Apostrophes are stripped instead of being separators for common 's endings
@@ -28,7 +27,7 @@ def parse_response(url: str, resp) -> Generator[str]:
     yield from format_tokens(parsed_words)
 
 
-def format_tokens(token_iter: Generator[str]) -> Generator[str]:
+def format_tokens(token_iter: 'str iterable') -> 'str iterator':
     for token in token_iter:
         token = token.lower()
         if token in STOPWORDS:
@@ -40,7 +39,7 @@ def format_tokens(token_iter: Generator[str]) -> Generator[str]:
         yield token
 
 
-def parse_line(line: str) -> Generator[str]:
+def parse_line(line: str) -> 'str iterator':
     # Ex: J@hn D#e
     word_start = 0
     word_end = 0
@@ -67,7 +66,7 @@ UNIQUE_PAGE_HASH_SET = set()
 LONGEST_PAGE_WORD_COUNT = 0
 WORD_COUNT_DICTIONARY = dict() # For 50 most common words
 SUBDOMAIN_COUNT_DICTIONARY = dict() # For subdomain unique page count
-def write_count(url, resp, token_iter: Generator[str]) -> None:
+def write_count(url, resp, token_iter: 'str iterable') -> None:
     # UNIQUE_PAGE_COUNT
     global UNIQUE_PAGE_COUNT
     global UNIQUE_PAGE_HASH_SET
