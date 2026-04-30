@@ -156,7 +156,7 @@ def record_count_to_file() -> None:
 
 def record_warning_to_file(warning: str) -> None:
     with open('warning.txt', 'a') as file:
-        file.write(warning)
+        file.write(warning + '\n')
 
 
 def string_unique_pages(unique_page_count) -> str:
