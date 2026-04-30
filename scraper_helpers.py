@@ -92,3 +92,19 @@ def remove_fragment(url: str) -> str:
         return url
     else:
         return url[:found_fragment_index]
+
+
+def remove_query(url: str) -> str:
+    found_fragment_index = -1
+    for i in range(len(url) - 1, -1, -1):
+        if url[i] == '/':
+            return url
+        elif url[i] == '?':
+            found_fragment_index = i
+            break
+
+    if found_fragment_index == -1:
+        #print(f'Error: URL |{url}| does not contain a single slash? Might be malformed.')
+        return url
+    else:
+        return url[:found_fragment_index]

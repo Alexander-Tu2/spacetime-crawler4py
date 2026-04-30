@@ -2,6 +2,7 @@ import unittest
 import scraper
 import scraper_helpers
 import statistics_helpers
+from scraper_helpers import remove_query
 
 
 class MyTestCase(unittest.TestCase):
@@ -117,6 +118,16 @@ class MyTestCase(unittest.TestCase):
 
         scraper_helpers.remove_fragment_from_list(test_list)
         self.assertEqual(test_list_results, test_list)
+
+    def test_remove_query_parts(self):
+        url1 = 'www.google.com/path/to/item/no/query/'
+        url2 = 'www.google.com/path?query=something'
+
+        result1 = remove_query(url1)
+        result2 = remove_query(url2)
+
+        self.assertEqual(result1, url1)
+        self.assertEqual(result2, 'www.google.com/path')
 
     def test_parse_html_to_url_list(self):
         html = ('<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">'

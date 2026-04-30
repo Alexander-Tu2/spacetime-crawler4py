@@ -71,9 +71,10 @@ def write_count(url, resp, token_iter: 'str iterable') -> None:
     global UNIQUE_PAGE_COUNT
     global UNIQUE_PAGE_HASH_SET
     clean_url = scraper_helpers.remove_fragment(resp.url)
-    clean_hash = hash(clean_url)
-    if clean_hash not in UNIQUE_PAGE_HASH_SET:
-        UNIQUE_PAGE_HASH_SET.add(clean_hash)
+    unique_url = scraper_helpers.remove_query(clean_url)
+    unique_hash = hash(unique_url)
+    if unique_hash not in UNIQUE_PAGE_HASH_SET:
+        UNIQUE_PAGE_HASH_SET.add(unique_hash)
         UNIQUE_PAGE_COUNT += 1
     else:
         # Should not happen during regular operation, assuming
