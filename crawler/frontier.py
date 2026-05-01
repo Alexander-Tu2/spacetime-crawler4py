@@ -35,6 +35,7 @@ class Frontier(object):
         else:
             # Set the frontier state with contents of save file.
             self._parse_save_file()
+            statistics_helpers.load_globals_from_file()
             if not self.save:
                 for url in self.config.seed_urls:
                     self.add_url(url)

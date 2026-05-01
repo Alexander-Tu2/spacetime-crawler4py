@@ -5,7 +5,7 @@ import sys
 from urllib.parse import urlparse
 
 
-url_hash_set = set()
+#URL_HASH_SET = set()
 def scraper(url: str, resp) -> list:
     record_link_information(url, resp)
     links = extract_next_links(url, resp)
@@ -43,8 +43,8 @@ def is_valid(url: str) -> bool:
         parsed = urlparse(url)
         if parsed.scheme not in {"http", "https"}:
             return False
-        elif hash(url) in url_hash_set:
-            return False
+        # elif hash(url) in URL_HASH_SET:
+            # return False
         elif not scraper_helpers.contains_required_domains(url):
             return False
         elif scraper_helpers.contains_potential_trap(url):
@@ -64,7 +64,7 @@ def is_valid(url: str) -> bool:
                   r"|sql|cpp|c|hpp|h|py|java)$", parsed.path.lower()):
             return False
         else:
-            url_hash_set.add(hash(url))
+            # URL_HASH_SET.add(hash(url))
             return True
 
     except TypeError:
@@ -90,3 +90,4 @@ def record_link_information(url: str, resp) -> None:
     parsed_info_iter = statistics_helpers.parse_response(url, resp)
     statistics_helpers.write_count(url, resp, parsed_info_iter)
     statistics_helpers.record_count_to_file()
+    statistics_helpers.record_globals_to_file()

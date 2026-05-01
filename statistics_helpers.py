@@ -2,10 +2,12 @@
 
 from bs4 import BeautifulSoup
 import nltk
+import os
 import scraper_helpers
 import urllib
 
-# nltk code taken from:
+
+# nltk stopwords code taken from:
 # https://www.geeksforgeeks.org/nlp/removing-stop-words-nltk-python/
 nltk.download('stopwords')
 nltk.download('punkt')
@@ -32,6 +34,7 @@ def format_tokens(token_iter: 'str iterable') -> 'str iterator':
         token = token.lower()
         if token in STOPWORDS:
             continue
+
         # Remove all 's
         if "'s" in token:
             token = token[:token.find("'")]
@@ -79,7 +82,8 @@ def write_count(url, resp, token_iter: 'str iterable') -> None:
     else:
         # Could happen during regular operation, since unique pages uses
         #  more restrictive definition of unique
-        pass
+        record_warning_to_file(f'POTENTIAL DUPLICATE: Found {clean_url} which uses already recorded base '
+                               f'{unique_url}')
 
 
 
@@ -159,6 +163,56 @@ def record_count_to_file() -> None:
 def record_warning_to_file(warning: str) -> None:
     with open('warning.txt', 'a') as file:
         file.write(warning + '\n')
+
+'''
+UNIQUE_PAGE_COUNT = 0
+UNIQUE_PAGE_HASH_SET = set()
+LONGEST_PAGE_WORD_COUNT = 0
+WORD_COUNT_DICTIONARY = dict() # For 50 most common words
+SUBDOMAIN_COUNT_DICTIONARY = dict() # For subdomain unique page count
+'''
+def record_globals_to_file() -> None:
+    with open('statistics_state.txt', 'w') as file:
+        file.write(f'{UNIQUE_PAGE_COUNT}\n')
+        file.write(f'{UNIQUE_PAGE_HASH_SET}\n')
+        file.write(f'{LONGEST_PAGE_WORD_COUNT}\n')
+        file.write(f'{WORD_COUNT_DICTIONARY}\n')
+        file.write(f'{SUBDOMAIN_COUNT_DICTIONARY}\n')
+
+def load_globals_from_file() -> None:
+    global UNIQUE_PAGE_COUNT
+    global UNIQUE_PAGE_HASH_SET
+    global LONGEST_PAGE_WORD_COUNT
+    global WORD_COUNT_DICTIONARY
+    global SUBDOMAIN_COUNT_DICTIONARY
+    if not os.path.exists('statistics_state.txt'):
+        print(f'statistics_state.txt does not exist to load!')
+        return
+    else:
+        print(f'Loading statistics_state.txt!')
+    with open('statistics_state.txt', 'r') as file:
+        count = 0
+        for line in file:
+            line = line.strip()
+            if count == 0:
+                UNIQUE_PAGE_COUNT = int(line)
+                print(f'UNIQUE_PAGE_COUNT is now: {UNIQUE_PAGE_COUNT}')
+            elif count == 1:
+                UNIQUE_PAGE_HASH_SET = set(line)
+                print(f'UNIQUE_PAGE_HASH_SET is now length: {len(UNIQUE_PAGE_HASH_SET)}')
+            elif count == 2:
+                LONGEST_PAGE_WORD_COUNT = int(line)
+                print(f'LONGEST_PAGE_WORD_COUNT is now: {LONGEST_PAGE_WORD_COUNT}')
+            elif count == 3:
+                WORD_COUNT_DICTIONARY = dict(line)
+                print(f'WORD_COUNT_DICTIONARY is now length: {len(WORD_COUNT_DICTIONARY)}')
+            elif count == 4:
+                SUBDOMAIN_COUNT_DICTIONARY = dict(line)
+                print(f'SUBDOMAIN_COUNT_DICTIONARY is now length: {len(SUBDOMAIN_COUNT_DICTIONARY)}')
+            else:
+                break
+
+            count += 1
 
 
 def string_unique_pages(unique_page_count) -> str:
