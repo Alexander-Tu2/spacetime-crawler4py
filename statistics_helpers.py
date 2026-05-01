@@ -1,10 +1,12 @@
 # statistics_helpers.py
 
+import ast
 from bs4 import BeautifulSoup
 import nltk
 import os
 import scraper_helpers
 import urllib
+
 
 
 # nltk stopwords code taken from:
@@ -198,16 +200,16 @@ def load_globals_from_file() -> None:
                 UNIQUE_PAGE_COUNT = int(line)
                 print(f'UNIQUE_PAGE_COUNT is now: {UNIQUE_PAGE_COUNT}')
             elif count == 1:
-                UNIQUE_PAGE_HASH_SET = set(line)
+                UNIQUE_PAGE_HASH_SET = ast.literal_eval(line)
                 print(f'UNIQUE_PAGE_HASH_SET is now length: {len(UNIQUE_PAGE_HASH_SET)}')
             elif count == 2:
                 LONGEST_PAGE_WORD_COUNT = int(line)
                 print(f'LONGEST_PAGE_WORD_COUNT is now: {LONGEST_PAGE_WORD_COUNT}')
             elif count == 3:
-                WORD_COUNT_DICTIONARY = dict(line)
+                WORD_COUNT_DICTIONARY = ast.literal_eval(line)
                 print(f'WORD_COUNT_DICTIONARY is now length: {len(WORD_COUNT_DICTIONARY)}')
             elif count == 4:
-                SUBDOMAIN_COUNT_DICTIONARY = dict(line)
+                SUBDOMAIN_COUNT_DICTIONARY = ast.literal_eval(line)
                 print(f'SUBDOMAIN_COUNT_DICTIONARY is now length: {len(SUBDOMAIN_COUNT_DICTIONARY)}')
             else:
                 break
