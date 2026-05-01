@@ -32,7 +32,7 @@ def parse_response(url: str, resp) -> 'str iterator':
 
 
 PRINT_NEXT_WORD_COUNT = 0
-def format_tokens(token_iter: 'str iterable', resp) -> 'str iterator':
+def format_tokens(token_iter: 'str iterable', resp = None) -> 'str iterator':
     for token in token_iter:
         token = token.lower()
         if token in STOPWORDS:
@@ -42,11 +42,11 @@ def format_tokens(token_iter: 'str iterable', resp) -> 'str iterator':
         if "'s" in token:
             token = token[:token.find("'")]
 
-        if len(token) <= 1:
+        if len(token) <= 1 and resp:
             record_warning_to_file(f'LETTER WORD FOUND: {token} at URL {resp.url}')
             global PRINT_NEXT_WORD_COUNT
             PRINT_NEXT_WORD_COUNT = 5
-        elif PRINT_NEXT_WORD_COUNT > 0:
+        elif PRINT_NEXT_WORD_COUNT > 0 and resp:
             record_warning_to_file(f'NEXT WORD ({PRINT_NEXT_WORD_COUNT}): {token}')
             PRINT_NEXT_WORD_COUNT -= 1
 
