@@ -28,10 +28,11 @@ def parse_response(url: str, resp) -> 'str iterator':
     # https://beautiful-soup-4.readthedocs.io/en/latest/
     processed_content = BeautifulSoup(resp.raw_response.content, 'html.parser')
     parsed_words = parse_line(processed_content.get_text())
-    yield from format_tokens(parsed_words)
+    yield from format_tokens(parsed_words, resp)
 
 
-def format_tokens(token_iter: 'str iterable') -> 'str iterator':
+PRINT_NEXT_WORD_COUNT = 0
+def format_tokens(token_iter: 'str iterable', resp) -> 'str iterator':
     for token in token_iter:
         token = token.lower()
         if token in STOPWORDS:
@@ -40,6 +41,14 @@ def format_tokens(token_iter: 'str iterable') -> 'str iterator':
         # Remove all 's
         if "'s" in token:
             token = token[:token.find("'")]
+
+        if len(token) <= 1:
+            record_warning_to_file(f'LETTER WORD FOUND: {token} at URL {resp.url}')
+            global PRINT_NEXT_WORD_COUNT
+            PRINT_NEXT_WORD_COUNT = 5
+        elif PRINT_NEXT_WORD_COUNT > 0:
+            record_warning_to_file(f'NEXT WORD ({PRINT_NEXT_WORD_COUNT}): {token}')
+            PRINT_NEXT_WORD_COUNT -= 1
 
         yield token
 
@@ -86,7 +95,6 @@ def write_count(url, resp, token_iter: 'str iterable') -> None:
         #  more restrictive definition of unique
         record_warning_to_file(f'POTENTIAL DUPLICATE: Found {clean_url} which uses already recorded base '
                                f'{unique_url}')
-
 
 
     # WORD_COUNT_DICTIONARY + LONGEST_PAGE_WORD_COUNT
@@ -181,6 +189,7 @@ def record_globals_to_file() -> None:
         file.write(f'{WORD_COUNT_DICTIONARY}\n')
         file.write(f'{SUBDOMAIN_COUNT_DICTIONARY}\n')
 
+
 def load_globals_from_file() -> None:
     global UNIQUE_PAGE_COUNT
     global UNIQUE_PAGE_HASH_SET
@@ -241,7 +250,7 @@ def string_frequency_dict(frequency_dict: dict[str, int], sort_type: str) -> str
         token_list.append(token)
         frequency_list.append(frequency)
 
-    token_list, frequency_list = pairwiseMergeSort(token_list, frequency_list, sort_type)
+    token_list, frequency_list = pairwise_merge_sort(token_list, frequency_list, sort_type)
 
     for index in range(min(len(token_list), 50)):
         str_result += f'{token_list[index]}, {frequency_list[index]}\n'
@@ -252,7 +261,7 @@ def string_frequency_dict(frequency_dict: dict[str, int], sort_type: str) -> str
 # O(u log u) time, where u is the number of unique tokens, since it
 #  is a simple modification of merge sort, which is known to take
 #  O(n log n) time, where n is the input size, u in this case.
-def pairwiseMergeSort(token_list: list[str], freq_list: list[int], sort_type: str) -> tuple[list[str], list[int]]:
+def pairwise_merge_sort(token_list: list[str], freq_list: list[int], sort_type: str) -> tuple[list[str], list[int]]:
     """
     Sorts in decreasing order of frequency,
     sorting both the token_list and freq_list based
@@ -264,9 +273,9 @@ def pairwiseMergeSort(token_list: list[str], freq_list: list[int], sort_type: st
     else:
         # Recurse
         halfpoint = len(token_list) // 2
-        left_token, left_freq = pairwiseMergeSort(token_list[:halfpoint], freq_list[:halfpoint], sort_type)
+        left_token, left_freq = pairwise_merge_sort(token_list[:halfpoint], freq_list[:halfpoint], sort_type)
 
-        right_token, right_freq = pairwiseMergeSort(token_list[halfpoint:], freq_list[halfpoint:], sort_type)
+        right_token, right_freq = pairwise_merge_sort(token_list[halfpoint:], freq_list[halfpoint:], sort_type)
 
         # Merge
         new_token_list = []
