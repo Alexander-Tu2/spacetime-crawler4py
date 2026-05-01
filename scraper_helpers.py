@@ -22,7 +22,7 @@ def contains_potential_trap(url: str) -> str:
     potential_traps = 'calendar', 'date', 'dataset', 'login'
 
     # If url contains trap and anti-trap, let it through
-    anti_traps = 'dates'
+    anti_traps = 'dates', 'calendars'
     for trap in potential_traps:
         if trap in url and trap not in anti_traps:
             return trap
@@ -50,7 +50,7 @@ def is_fatal_error(error_num: int) -> bool:  # Fatal refers to errors stemming f
 #     606: Exception in parsing url
 #     607: Content too big. {resp.headers['content-length']}
 #     608: Denied by domain robot rules
-def record_error(resp: utils.response.Response):  # Print or write to log
+def get_exit_error(resp: utils.response.Response) -> str:
     status_dict = {429: 'Too many requests',
                    600: 'Request Malformed',
                    601: 'Download Exception',
@@ -63,11 +63,12 @@ def record_error(resp: utils.response.Response):  # Print or write to log
                    608: 'Denied by domain robot rules'}
     error_str = f'Program stopped due to fatal error code; found error code {resp.status}'
     if resp.status in status_dict:
-        error_str += f' - {status_dict[resp.status]}'
+        error_str += f' - {status_dict[resp.status]}\n'
 
-    print(error_str)
-    print(f'Found at scanned URL: {resp.url}')
-    print(f'Error message: {resp.error}')
+    error_str += f'Found at scanned URL: {resp.url}\n'
+    error_str += f'Error message: {resp.error}\n'
+
+    return error_str
 
 
 def parse_html_to_url_list(content: str) -> list[str]:

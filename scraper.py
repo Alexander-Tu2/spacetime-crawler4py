@@ -24,7 +24,9 @@ def extract_next_links(url: str, resp) -> list:
     # Return a list with the hyperlinks (as strings) scrapped from resp.raw_response.content
     if not scraper_helpers.is_errorless(resp.status):
         if scraper_helpers.is_fatal_error(resp.status):
-            scraper_helpers.record_error(resp)  # Print or write to log
+            exit_error_str = scraper_helpers.get_exit_error(resp)
+            print(exit_error_str)
+            statistics_helpers.record_warning_to_file(f'FATAL ERROR: \n{exit_error_str}')
             sys.exit(-1)
         else:
             return list()
