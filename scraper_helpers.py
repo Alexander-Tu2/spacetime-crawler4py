@@ -18,14 +18,23 @@ def contains_required_domains(url: str) -> bool:
     return False
 
 
-def contains_potential_trap(url: str) -> str:
+def return_potential_trap(url: str) -> str:
     potential_traps = 'calendar', 'date', 'dataset', 'login'
 
     # If url contains trap and anti-trap, let it through
     anti_traps = 'dates', 'calendars'
-    for trap in potential_traps:
-        if trap in url and trap not in anti_traps:
-            return trap
+
+    contained_trap = return_word_in_list(url, potential_traps)
+    contained_anti_trap = return_word_in_list(url, anti_traps)
+    if contained_trap and not contained_anti_trap:
+        return contained_trap
+
+    return ''
+
+def return_word_in_list(url: str, word_list: list) -> str:
+    for word in word_list:
+        if word in url:
+            return word
 
     return ''
 

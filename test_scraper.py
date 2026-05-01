@@ -169,7 +169,12 @@ class MyTestCase(unittest.TestCase):
 
         self.assertEqual(expected_words, token_tuple)
 
+    def test_contains_potential_trap(self):
+        trap_url = 'www.google.com/date'
+        antitrap_url = 'www.google.com/dates'
 
+        self.assertEqual('date', scraper_helpers.return_potential_trap(trap_url))
+        self.assertEqual('', scraper_helpers.return_potential_trap(antitrap_url))
 
 
 if __name__ == '__main__':
