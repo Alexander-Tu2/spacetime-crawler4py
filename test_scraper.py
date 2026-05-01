@@ -176,6 +176,20 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual('date', scraper_helpers.return_potential_trap(trap_url))
         self.assertEqual('', scraper_helpers.return_potential_trap(antitrap_url))
 
+    def test_contains_potential_trap_but_not_as_ending_word(self):
+        # Only ignores trap words that are at the end of an actual English word
+        # Update - Ignored
+        # Super/date - TRAP WORD
+        trap_url = 'www.google.com/date'
+        ending_word_url = 'www.google.com/update'
+        ending_word_url2 = 'www.google.com/new-candidate'
+        invalid_ending_word_url = 'www.google.com/mega-calendar'
+
+        self.assertEqual('date', scraper_helpers.return_potential_trap(trap_url))
+        self.assertEqual('', scraper_helpers.return_potential_trap(ending_word_url))
+        self.assertEqual('', scraper_helpers.return_potential_trap(ending_word_url2))
+        self.assertEqual('calendar', scraper_helpers.return_potential_trap(invalid_ending_word_url))
+
 
 if __name__ == '__main__':
     unittest.main()

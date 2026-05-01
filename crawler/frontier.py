@@ -1,5 +1,6 @@
 import os
 import shelve
+from datetime import datetime
 
 from threading import Thread, RLock
 from queue import Queue, Empty
@@ -16,6 +17,7 @@ class Frontier(object):
         self.config = config
         self.to_be_downloaded = dict()  # Subdomain str to set[urls to download]
         self._next_url_iterator = self.get_next_url_iterator()
+        statistics_helpers.record_warning_to_file(f'\n-- INITIALIZATION {datetime.now()} --')
         
         if not os.path.exists(self.config.save_file) and not restart:
             # Save file does not exist, but request to load save.

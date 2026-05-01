@@ -26,10 +26,13 @@ def return_potential_trap(url: str) -> str:
 
     contained_trap = return_word_in_list(url, potential_traps)
     contained_anti_trap = return_word_in_list(url, anti_traps)
-    if contained_trap and not contained_anti_trap:
+    pre_trap_char = return_char_before_word_in_str(url, contained_trap)
+    trap_is_part_of_word = pre_trap_char.lower() in 'abcdefghijklmnopqrstuvwxyz'
+    if contained_trap and not contained_anti_trap and not trap_is_part_of_word:
         return contained_trap
 
     return ''
+
 
 def return_word_in_list(url: str, word_list: list) -> str:
     for word in word_list:
@@ -37,6 +40,17 @@ def return_word_in_list(url: str, word_list: list) -> str:
             return word
 
     return ''
+
+
+def return_char_before_word_in_str(url: str, keyword: str) -> str:
+    if keyword not in url or keyword == '':
+        return ''
+
+    keyword_index = url.index(keyword)
+    if keyword_index > 0:
+        return url[keyword_index - 1]
+    else:
+        return ''
 
 
 def is_errorless(error_num: int) -> bool:
