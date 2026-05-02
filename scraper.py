@@ -86,8 +86,12 @@ def record_link_information(url: str, resp) -> None:
             scraper_helpers.record_error(resp)  # Print or write to log
             sys.exit(-1)
         else:
-            statistics_helpers.record_warning_to_file(f'ERROR({resp.status}): Occurred on {resp.url},'
-                                                      f' travelled from {url}')
+            ignored_errors = 404, 500,
+            if resp.status not in ignored_errors:
+                error_str = f'ERROR({resp.status}): Occurred on {resp.url}'
+                if resp.url != url:
+                    error_str += f' travelled from {url}'
+                statistics_helpers.record_warning_to_file(error_str)
             return
     parsed_info_iter = statistics_helpers.parse_response(url, resp)
     statistics_helpers.write_count(url, resp, parsed_info_iter)
