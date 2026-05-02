@@ -4,6 +4,7 @@ import ast
 from bs4 import BeautifulSoup
 import nltk
 import os
+import random
 import scraper_helpers
 import urllib
 
@@ -19,6 +20,10 @@ STOPWORDS = set(nltk.corpus.stopwords.words('english'))
 # Word threshold for warning log
 LOWEST_WORD_COUNT_THRESHOLD = 50
 
+# Near-duplicate threshold
+NEAR_DUPLICATE_THRESHOLD = 0.95
+
+IS_DUPLICATE = False
 def parse_response(url: str, resp) -> 'str iterator':
     # Returns word-by-word the desirable information from the page content
     # Uses definition of token as in assignment 1 with adjustments:
@@ -26,9 +31,87 @@ def parse_response(url: str, resp) -> 'str iterator':
 
     # Code here taken & adapted from BeautifulSoup documentation:
     # https://beautiful-soup-4.readthedocs.io/en/latest/
+    global IS_DUPLICATE
     processed_content = BeautifulSoup(resp.raw_response.content, 'html.parser')
+    IS_DUPLICATE = False
+    check_exact_duplicate(processed_content, url)
     parsed_words = parse_line(processed_content.get_text())
     yield from format_tokens(parsed_words, resp)
+
+
+EXACT_DUPLICATE_HASH_SET = set()
+def check_exact_duplicate(content: str, url: str) -> None:
+    # Implementing hashing for exact duplicate detection
+    global IS_DUPLICATE
+    content_hash = hash(content)
+    if content_hash in EXACT_DUPLICATE_HASH_SET:
+        IS_DUPLICATE = True
+        record_warning_to_file(f'EXACT DUPLICATE: {url}')
+    else:
+        EXACT_DUPLICATE_HASH_SET.add(content_hash)
+
+
+NEAR_DUPLICATE_SIMHASH_SET = set()
+NEAR_DUPLICATE_SIMHASH_DICTIONARY = dict()  # To assign word to consistent 16-bit hash value
+def check_near_duplicate(frequency_dict: dict[str, int], url: str) -> None:
+    # Implement simhash for near duplicate detection
+    # 16-bit simhash; num from 0 to 65,535
+    global IS_DUPLICATE
+    website_simhash_value = get_website_simhash_value(frequency_dict)
+    largest_similarity_score = 0.0
+
+    for simhash in NEAR_DUPLICATE_SIMHASH_SET:
+        similarity_count = 0
+        for index in range(len(website_simhash_value)):
+            if website_simhash_value[index] == simhash[index]:
+                similarity_count += 1
+
+        similarity_score = similarity_count / len(website_simhash_value)
+        largest_similarity_score = max(similarity_score, largest_similarity_score)
+
+    if largest_similarity_score >= NEAR_DUPLICATE_THRESHOLD:
+        IS_DUPLICATE = True
+        record_warning_to_file(f'NEAR DUPLICATE ({largest_similarity_score}): {url}')
+
+
+def get_website_simhash_value(frequency_dict: dict[str, int]) -> list:
+    hash_value_bit_length = 16
+    total_hash_value = [0 for x in range(hash_value_bit_length)]
+    for word, frequency in frequency_dict.items():
+        word_hash_value = tuple()
+        if word in NEAR_DUPLICATE_SIMHASH_DICTIONARY:
+            word_hash_value = NEAR_DUPLICATE_SIMHASH_DICTIONARY[word]
+        else:
+            word_hash_value = generate_word_hash(word)
+
+        for index in range(len(total_hash_value)):
+            total_hash_value[index] += word_hash_value[index] * frequency
+
+    for index in range(len(total_hash_value)):
+        if total_hash_value[index] < 0:
+            total_hash_value[index] = 0
+        else:
+            total_hash_value[index] = 1
+
+    return total_hash_value
+
+
+def generate_word_hash(word: str) -> tuple:
+    if word in NEAR_DUPLICATE_SIMHASH_DICTIONARY:
+        return NEAR_DUPLICATE_SIMHASH_DICTIONARY[word]
+
+    random_number = random.randint(0, 65535)
+    word_hash_value = list()
+    for bit_index in range(15, -1, -1): # From 15 to 0
+        word_hash_value.append(get_bit(random_number, bit_index))
+
+    NEAR_DUPLICATE_SIMHASH_DICTIONARY[word] = tuple(word_hash_value)
+    return NEAR_DUPLICATE_SIMHASH_DICTIONARY[word]
+
+
+def get_bit(value: int, bit_num: int) -> int:
+    # bit_num = 0 means right bit
+    return (value >> bit_num) & 1
 
 
 PRINT_NEXT_WORD_COUNT = 0
@@ -92,11 +175,24 @@ def write_count(url, resp, token_iter: 'str iterable') -> None:
         record_warning_to_file(f'POTENTIAL DUPLICATE: Found {clean_url} which uses already recorded base '
                                f'{unique_url}')
 
+    # SUBDOMAIN_COUNT_DICTIONARY
+    global SUBDOMAIN_COUNT_DICTIONARY
+    increment_subdomain_dictionary(clean_url, SUBDOMAIN_COUNT_DICTIONARY)
+
+    # NEAR DUPLICATE DETECTION
+    global WORD_COUNT_DICTIONARY
+    current_count = compute_word_frequencies(token_iter, WORD_COUNT_DICTIONARY)
+    check_near_duplicate(current_count, url)
+
+    global IS_DUPLICATE
+    if IS_DUPLICATE:
+        IS_DUPLICATE = False
+        return
 
     # WORD_COUNT_DICTIONARY + LONGEST_PAGE_WORD_COUNT
     global LONGEST_PAGE_WORD_COUNT
-    global WORD_COUNT_DICTIONARY
-    current_count = compute_word_frequencies(token_iter, WORD_COUNT_DICTIONARY)
+
+
     if current_count < LOWEST_WORD_COUNT_THRESHOLD:
         warning_str = f'LOW WORD COUNT ({current_count} < {LOWEST_WORD_COUNT_THRESHOLD}): '\
                       f'At {clean_url}'
@@ -105,9 +201,6 @@ def write_count(url, resp, token_iter: 'str iterable') -> None:
         record_warning_to_file(warning_str)
     LONGEST_PAGE_WORD_COUNT = max(current_count, LONGEST_PAGE_WORD_COUNT)
 
-    # SUBDOMAIN_COUNT_DICTIONARY
-    global SUBDOMAIN_COUNT_DICTIONARY
-    increment_subdomain_dictionary(clean_url, SUBDOMAIN_COUNT_DICTIONARY)
 
 
 # Taken & modified from Assignment 1, Part A
