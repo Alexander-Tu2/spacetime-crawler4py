@@ -42,13 +42,9 @@ def format_tokens(token_iter: 'str iterable', resp = None) -> 'str iterator':
         if "'s" in token:
             token = token[:token.find("'")]
 
-        if len(token) <= 1 and resp:
-            record_warning_to_file(f'LETTER WORD FOUND: {token} at URL {resp.url}')
-            global PRINT_NEXT_WORD_COUNT
-            PRINT_NEXT_WORD_COUNT = 5
-        elif PRINT_NEXT_WORD_COUNT > 0 and resp:
-            record_warning_to_file(f'NEXT WORD ({PRINT_NEXT_WORD_COUNT}): {token}')
-            PRINT_NEXT_WORD_COUNT -= 1
+        # Remove all single-character letters and numbers
+        if len(token) <= 1:
+            continue
 
         yield token
 
@@ -57,7 +53,7 @@ def parse_line(line: str) -> 'str iterator':
     # Ex: J@hn D#e
     word_start = 0
     word_end = 0
-    english_chars = 'abcdefghijklmnopqrstuvwxyz1234567890\''
+    english_chars = 'abcdefghijklmnopqrstuvwxyz1234567890\':'
     for letter in line:
         if letter.lower() in english_chars:
             # Add into current word
