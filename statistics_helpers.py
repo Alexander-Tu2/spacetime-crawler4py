@@ -21,7 +21,7 @@ STOPWORDS = set(nltk.corpus.stopwords.words('english'))
 LOWEST_WORD_COUNT_THRESHOLD = 50
 
 # Near-duplicate threshold
-NEAR_DUPLICATE_THRESHOLD = 0.95
+NEAR_DUPLICATE_THRESHOLD = 0.875
 
 IS_DUPLICATE = False
 def parse_response(url: str, resp) -> 'str iterator':
@@ -73,6 +73,8 @@ def check_near_duplicate(frequency_dict: dict[str, int], url: str) -> None:
         IS_DUPLICATE = True
         record_warning_to_file(f'NEAR DUPLICATE ({largest_similarity_score}): {url}')
 
+    NEAR_DUPLICATE_SIMHASH_SET.add(tuple(website_simhash_value))
+
 
 def get_website_simhash_value(frequency_dict: dict[str, int]) -> list:
     hash_value_bit_length = 16
@@ -103,7 +105,10 @@ def generate_word_hash(word: str) -> tuple:
     random_number = random.randint(0, 65535)
     word_hash_value = list()
     for bit_index in range(15, -1, -1): # From 15 to 0
-        word_hash_value.append(get_bit(random_number, bit_index))
+        bit = get_bit(random_number, bit_index)
+        if bit == 0:
+            bit = -1
+        word_hash_value.append(bit)
 
     NEAR_DUPLICATE_SIMHASH_DICTIONARY[word] = tuple(word_hash_value)
     return NEAR_DUPLICATE_SIMHASH_DICTIONARY[word]
@@ -204,7 +209,7 @@ def write_count(url, resp, token_iter: 'str iterable') -> None:
 
 
 # Taken & modified from Assignment 1, Part A
-def compute_word_frequencies(token_iter: 'str iterator', word_count_dictionary: dict) -> int:
+def compute_word_frequencies(token_iter: 'str iterator', word_count_dictionary: dict = None) -> int:
     """
     Given a token iterator, updates the global word count
     dictionary and returns the amount of tokens in the iterator.
@@ -212,6 +217,8 @@ def compute_word_frequencies(token_iter: 'str iterator', word_count_dictionary: 
     :param word_count_dictionary:
     :return int:
     """
+    if word_count_dictionary is None:
+        word_count_dictionary = dict()
     token_count = 0
     for token in token_iter:
         token_count += 1

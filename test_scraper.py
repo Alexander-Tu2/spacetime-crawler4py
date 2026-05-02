@@ -1,8 +1,10 @@
+import random
 import unittest
 import scraper
 import scraper_helpers
 import statistics_helpers
 from scraper_helpers import remove_query
+from statistics_helpers import check_exact_duplicate
 
 
 class MyTestCase(unittest.TestCase):
@@ -189,6 +191,43 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual('', scraper_helpers.return_potential_trap(ending_word_url))
         self.assertEqual('', scraper_helpers.return_potential_trap(ending_word_url2))
         self.assertEqual('calendar', scraper_helpers.return_potential_trap(invalid_ending_word_url))
+
+
+    def test_duplicate_detection_works(self):
+        random.seed(250)
+        test_url = 'https://www.test.com/'
+        content1 = 'yorick pyke sylas jhin'
+        content2 = 'yorick pyke sylas jhin'
+        content3 = 'yorick pyke sylas jhin shaco'
+        content4 = 'when i stepped out of the dark theater i had two things on my mind paul newman and a ride home'
+
+        statistics_helpers.IS_DUPLICATE = False
+        check_exact_duplicate(content1, test_url)
+        check_exact_duplicate(content2, test_url)
+        self.assertEqual(True, statistics_helpers.IS_DUPLICATE)
+        statistics_helpers.IS_DUPLICATE = False
+        check_exact_duplicate(content3, test_url)
+        self.assertEqual(False, statistics_helpers.IS_DUPLICATE)
+
+        statistics_helpers.IS_DUPLICATE = False
+        dict1 = dict()
+        dict2 = dict()
+        dict3 = dict()
+        dict4 = dict()
+        statistics_helpers.compute_word_frequencies(content1, dict1)
+        statistics_helpers.compute_word_frequencies(content2, dict2)
+        statistics_helpers.compute_word_frequencies(content3, dict3)
+        statistics_helpers.compute_word_frequencies(content4, dict4)
+        statistics_helpers.check_near_duplicate(dict1, test_url)
+        statistics_helpers.check_near_duplicate(dict2, test_url)
+        self.assertEqual(True, statistics_helpers.IS_DUPLICATE)
+        statistics_helpers.IS_DUPLICATE = False
+        statistics_helpers.check_near_duplicate(dict3, test_url)
+        self.assertEqual(True, statistics_helpers.IS_DUPLICATE)
+        statistics_helpers.IS_DUPLICATE = False
+        statistics_helpers.check_near_duplicate(dict4, test_url)
+        self.assertEqual(False, statistics_helpers.IS_DUPLICATE)
+
 
 
 if __name__ == '__main__':
