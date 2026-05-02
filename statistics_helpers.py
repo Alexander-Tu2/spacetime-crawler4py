@@ -17,7 +17,7 @@ nltk.download('punkt')
 STOPWORDS = set(nltk.corpus.stopwords.words('english'))
 
 # Word threshold for warning log
-LOWEST_WORD_COUNT_THRESHOLD = 100
+LOWEST_WORD_COUNT_THRESHOLD = 50
 
 def parse_response(url: str, resp) -> 'str iterator':
     # Returns word-by-word the desirable information from the page content

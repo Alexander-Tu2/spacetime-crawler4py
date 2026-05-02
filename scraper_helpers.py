@@ -22,7 +22,7 @@ def return_potential_trap(url: str) -> str:
     potential_traps = 'calendar', 'date', 'dataset', 'login'
 
     # If url contains trap and anti-trap, let it through
-    anti_traps = 'calendars', 'dates', 'datasets'
+    anti_traps = 'calendars', 'dates', 'datasets', 'seminars'
 
     contained_trap = return_word_in_list(url, potential_traps)
     contained_anti_trap = return_word_in_list(url, anti_traps)

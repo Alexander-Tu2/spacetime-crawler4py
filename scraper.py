@@ -50,9 +50,11 @@ def is_valid(url: str) -> bool:
         elif not scraper_helpers.contains_required_domains(url):
             return False
         elif scraper_helpers.return_potential_trap(url):
-            statistics_helpers.record_warning_to_file(f'Potential Trap ('
-                                                      f'{scraper_helpers.return_potential_trap(url)}'
-                                                      f'): Found at {url}')
+            potential_trap = scraper_helpers.return_potential_trap(url)
+            if potential_trap != 'login':
+                statistics_helpers.record_warning_to_file(f'Potential Trap ('
+                                                          f'{potential_trap}'
+                                                          f'): Found at {url}')
             return False
         elif re.match(
                 r".*\.(css|js|bmp|gif|jpe?g|ico"
