@@ -63,7 +63,7 @@ def is_valid(url: str) -> bool:
                 + r"|epub|dll|cnf|tgz|sha1"
                 + r"|thmx|mso|arff|rtf|jar|csv"
                 + r"|rm|smil|wmv|swf|wma|zip|rar|gz"
-                  r"|sql|cpp|c|hpp|h|py|java)$", parsed.path.lower()):
+                  r"|sql|cpp|c|hpp|h|py|java|ppsx)$", parsed.path.lower()):
             return False
         else:
             # URL_HASH_SET.add(hash(url))
