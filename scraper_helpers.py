@@ -19,12 +19,13 @@ def contains_required_domains(url: str) -> bool:
 
 
 def return_potential_trap(url: str) -> str:
-    potential_traps = 'calendar', 'date', 'dataset', 'login'
+    potential_traps = {'calendar', 'date', 'dataset'}
+    url_keywords_to_avoid = {'login', 'isg.ics.uci.edu/events'}
 
     # If url contains trap and anti-trap, let it through
-    anti_traps = 'calendars', 'dates', 'datasets', 'seminars'
+    anti_traps = {'calendars', 'dates', 'datasets', 'seminars'}
 
-    contained_trap = return_word_in_list(url, potential_traps)
+    contained_trap = return_word_in_list(url, potential_traps | url_keywords_to_avoid)
     contained_anti_trap = return_word_in_list(url, anti_traps)
     pre_trap_char = return_char_before_word_in_str(url, contained_trap)
     trap_is_part_of_word = pre_trap_char.lower() in 'abcdefghijklmnopqrstuvwxyz'
